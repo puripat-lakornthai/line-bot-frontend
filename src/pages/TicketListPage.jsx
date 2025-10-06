@@ -62,6 +62,8 @@ const TicketListPage = () => {
       setHasMore(page < (res.totalPages || 1));
       setCurrentPage(page);
     } catch (err) {
+      // ✅ แก้ตรงนี้: หยุดยิงซ้ำเมื่อ error
+      setHasMore(false);
       toast.error(err.message || 'โหลดข้อมูลล้มเหลว');
     } finally {
       setIsLoading(false);
@@ -80,13 +82,14 @@ const TicketListPage = () => {
   // ดัก scroll ถึงท้าย list เพื่อโหลดหน้าใหม่
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && hasMore) {
+      // ✅ แก้ตรงนี้: เพิ่ม !isLoading กันยิงซ้อน
+      if (entries[0].isIntersecting && hasMore && !isLoading) {
         fetchTickets(currentPage + 1);
       }
     });
     if (observerRef.current) observer.observe(observerRef.current);
     return () => observer.disconnect(); // ยกเลิก observer เมื่อออกจากหน้า
-  }, [fetchTickets, hasMore, currentPage]);
+  }, [fetchTickets, hasMore, currentPage, isLoading]);
 
   return (
     <div className="ticket-list-page">
