@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Typography, Pagination, Spin, Alert } from 'antd';
+import { Table, Typography, Pagination, Spin, Alert, Button } from 'antd';
 import staffService from '../../services/staffService';
 import TaskModal from '../../components/TaskModal';
 
@@ -32,7 +32,9 @@ const StaffWorkloadPage = () => {
     {
       title: '', // คอลัมน์สำหรับปุ่ม "ดูงาน"
       render: (_, record) => (
-        <a onClick={() => setSelectedStaff(record)}>ดูงาน</a>
+        <Button type="link" onClick={() => setSelectedStaff(record)}>
+          ดูงาน
+        </Button>
       )
     }
   ];
