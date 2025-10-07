@@ -49,7 +49,7 @@ const TicketListPage = () => {
 
   // โหลด ticket จาก backend ตามฟิลเตอร์และหน้าปัจจุบัน
   const fetchTickets = useCallback(async (page = 1) => {
-    if (isLoading || !hasMore) return;
+    // อย่าผูกกับ isLoading/hasMore เพื่อลดการสร้างฟังก์ชันใหม่
     setIsLoading(true);
 
     try {
@@ -62,13 +62,13 @@ const TicketListPage = () => {
       setHasMore(page < (res.totalPages || 1));
       setCurrentPage(page);
     } catch (err) {
-      // ✅ แก้ตรงนี้: หยุดยิงซ้ำเมื่อ error
+      // หยุดยิงซ้ำเมื่อ error
       setHasMore(false);
       toast.error(err.message || 'โหลดข้อมูลล้มเหลว');
     } finally {
       setIsLoading(false);
     }
-  }, [filters, isLoading, hasMore]);
+  }, [filters]);
 
   // โหลดข้อมูลเมื่อ filters เปลี่ยน
   useEffect(() => {
@@ -77,12 +77,12 @@ const TicketListPage = () => {
     setCurrentPage(1);
     setHasMore(true);
     fetchTickets(1); // โหลดหน้าแรกใหม่
-  }, [filters]);
+  }, [filters, fetchStaffAndAdminUsers, fetchTickets]); // ✅ ใส่ฟังก์ชันตาม ESLint
 
   // ดัก scroll ถึงท้าย list เพื่อโหลดหน้าใหม่
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
-      // ✅ แก้ตรงนี้: เพิ่ม !isLoading กันยิงซ้อน
+      // เพิ่ม !isLoading กันยิงซ้อน
       if (entries[0].isIntersecting && hasMore && !isLoading) {
         fetchTickets(currentPage + 1);
       }
