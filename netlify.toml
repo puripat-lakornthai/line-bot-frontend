@@ -1,16 +1,12 @@
 [build]
-  # บอก Netlify ว่าทำงานในโฟลเดอร์นี้
-  base = "line-bot-frontend"
   command = "npm ci && npm run build"
-  publish = "line-bot-frontend/build"  # react-scripts build จะปล่อยที่ build/
+  publish = "build"
 
-# SPA redirect
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
-# (มีหรือไม่มีก็ได้ ถ้าคุณเสิร์ฟไฟล์ที่ /assets/*)
 [[headers]]
   for = "/assets/*"
   [headers.values]

@@ -77,7 +77,7 @@ const TicketListPage = () => {
     setCurrentPage(1);
     setHasMore(true);
     fetchTickets(1); // โหลดหน้าแรกใหม่
-  }, [filters]);
+  }, [filters, fetchStaffAndAdminUsers, fetchTickets]);
 
   // ดัก scroll ถึงท้าย list เพื่อโหลดหน้าใหม่
   useEffect(() => {
