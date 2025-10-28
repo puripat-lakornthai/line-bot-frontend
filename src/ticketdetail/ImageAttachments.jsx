@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 // ฟังก์ชันช่วยเช็คว่าไฟล์เป็นภาพหรือไม่ จากนามสกุล
 const isImage = f => /\.(jpg|jpeg|png|gif|webp)$/i.test(f.file_name);
@@ -13,6 +13,30 @@ const ImageAttachments = ({ attachments = [], apiBase }) => {
   const [dragging, setDragging] = useState(false);
   const dragStart = useRef({ x: 0, y: 0 });
   const lastOffset = useRef({ x: 0, y: 0 });
+  const overlayRef = useRef(null); // สำหรับดัก touch บน overlay
+
+  // ล็อก body scroll และกัน touchmove ภายใน overlay เมื่อเปิด lightbox
+  useEffect(() => {
+    if (!lightboxOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const el = overlayRef.current;
+    const stopDefault = (e) => e.preventDefault();
+
+    if (el) {
+      el.addEventListener('wheel', stopDefault, { passive: false });
+      el.addEventListener('touchmove', stopDefault, { passive: false });
+    }
+
+    return () => {
+      if (el) {
+        el.removeEventListener('wheel', stopDefault);
+        el.removeEventListener('touchmove', stopDefault);
+      }
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [lightboxOpen]);
 
   if (images.length === 0) return null;
 
@@ -131,7 +155,11 @@ const ImageAttachments = ({ attachments = [], apiBase }) => {
 
       {/* Lightbox แสดงภาพใหญ่ + ซูม/แพนได้ */}
       {lightboxOpen && current && (
-        <div className="image-lightbox-overlay" onClick={handleCloseLightbox}>
+        <div
+          className="image-lightbox-overlay"
+          ref={overlayRef}
+          onClick={handleCloseLightbox}
+        >
           <div
             className="image-lightbox-inner"
             onClick={e => e.stopPropagation()} // กันคลิกทะลุ overlay
