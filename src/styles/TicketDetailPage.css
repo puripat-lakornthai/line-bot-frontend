@@ -254,7 +254,7 @@
   gap: 0.5rem;
   width: 100%;
   max-width: 600px;
-  position: relative;
+  position: relative; /* สำหรับปุ่มเลื่อน */
 }
 
 /* container thumbnails ที่ scroll ได้ */
@@ -263,9 +263,9 @@
   overflow-x: auto;
   gap: 0.75rem;
   scroll-behavior: smooth;
-  scrollbar-width: none;
+  scrollbar-width: none; /* ซ่อนสกอร์บาร์ (Firefox) */
 }
-.image-thumbnail-scrollable::-webkit-scrollbar {
+.image-thumbnail-scrollable::-webkit-scrollbar { /* ซ่อนสกอร์บาร์ (WebKit) */
   display: none;
 }
 
@@ -279,6 +279,7 @@
   flex-shrink: 0;
   /* transition: 0.2s; */
   cursor: pointer;
+  /* transition: 0.2s;  ปิดไว้ถ้าไม่อยากให้ดิ้น */
 }
 
 /* thumbnail ที่ active หรือ hover */
@@ -305,23 +306,19 @@
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
   transition: background-color 0.2s;
 }
-.image-thumb-nav:hover {
-  background: rgba(0, 0, 0, 0.8);
-}
+.image-thumb-nav:hover { background: rgba(0, 0, 0, 0.8); }
 
 /* --- Lightbox สำหรับรูปภาพ --- */
 /* --- Lightbox Overlay ครอบทั้งหน้าจอ --- */
 .image-lightbox-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.85);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.92);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9999;
+  z-index: 9999;               /* ครอบทุกอย่าง */
+  overscroll-behavior: contain;/* กันสกรอลล์ทะลุพื้นหลัง */
 }
 
 /* กล่องหลักของ lightbox */
@@ -330,81 +327,100 @@
   flex-direction: column;
   background: #fff;
   border-radius: 12px;
-  padding: 1rem;
-  max-width: 999vh; /* กำหนดความกว้างสูงสุดของหน้าจอ */
-  max-height: 99vh; /* กำหนดความสูงสุดของหน้าจอ */
-  overflow: hidden;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
-  position: relative;
+  padding: 12px;
+  width: min(96vw, 1200px);
+  height: min(92vh, 900px);
+  overflow: hidden;            /* กันคอนเทนต์ล้นกล่อง */
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+  position: relative;          /* เป็น anchor ให้ปุ่มลอย */
 }
 
 /* พื้นที่แสดงภาพหลัก */
 .image-lightbox-main-view {
   flex: 1;
+  position: relative;          /* วางลูกศรแบบ absolute ได้ */
   display: flex;
   justify-content: center;
   align-items: center;
-  position: relative;
-  /* height: 70vh; <-- ลบอันนี้ออก */
-  padding: 1rem 0;
+  min-height: 0;               /* ให้รูปใช้ max-height ได้จริง */
+  padding: 8px 0;
+  overflow: hidden;            /* กันรูปที่ซูมล้นลงมาทับ thumbnails */
+  z-index: 1;                  /* สร้าง stacking-context */
 }
 
 /* ภาพหลักใน lightbox */
 .image-lightbox-image {
-  max-width: 50vw;       /* จำกัดความกว้างไม่เกิน 50% ของ viewport */
-  max-height: 80vh;      /* จำกัดความสูงไม่เกิน 80% ของ viewport */
-  object-fit: contain;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;         /* รักษาสัดส่วน */
   border-radius: 8px;
+  display: block;
+  position: relative;          /* ให้ z-index มีผล */
+  z-index: 2;                  /* อยู่เหนือแถบ thumbnails เสมอ */
+  transform-origin: center center; /* จุดซูมอยู่กลางภาพ */
+  -webkit-user-drag: none;     /* ไม่ให้ลากออกจากกรอบ */
+  user-select: none;           /* ไม่ให้เลือกข้อความขณะแพน */
+  will-change: transform;      /* ทำให้ซูม/แพนลื่น */
 }
 
 /* thumbnails ด้านล่างใน lightbox */
 .image-lightbox-thumbnails {
+  position: relative;
+  z-index: 0;               
   display: flex;
-  justify-content: flex-start;
   align-items: center;
-  gap: 0.5rem;
-  margin-top: 1rem;
-  padding: 0.5rem 1rem;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 8px 4px;
   overflow-x: auto;
   scroll-behavior: smooth;
   scrollbar-width: thin;
-  scrollbar-color: #ccc transparent;
+  scrollbar-color: #bbb transparent;
 }
 
 /* ไม่บีบ ไม่ยืด ยึดตามขนาดภาพจริงภายในกรอบจำกัด */
 .image-lightbox-thumbnail {
-  height: 70px;            /* ความสูง thumbnail */
-  width: auto;             /* กว้างตามสัดส่วนจริง */
-  object-fit: scale-down;  /* แสดงภาพแบบย่อโดยไม่บีบ */
+  height: 70px;
+  width: auto;
+  object-fit: scale-down;      /* ลดขนาดแบบไม่บี้รูป */
   border-radius: 6px;
-  opacity: 0.6;
+  opacity: 0.65;
   cursor: pointer;
-  transition: 0.2s;
+  transition: transform .15s ease, opacity .15s ease, box-shadow .15s ease, border-color .15s ease;
   flex-shrink: 0;
-  background-color: #fff;  /* เพื่อให้ภาพแนวตั้งไม่จมหายบนพื้นโปร่ง */
+  background-color: #fff;
+  border: 2px solid transparent;
 }
 
-.image-lightbox-thumbnail.active,
-.image-lightbox-thumbnail:hover {
+.image-lightbox-thumbnail:hover,
+.image-lightbox-thumbnail.active {
   opacity: 1;
-  border: 2px solid #0073e6;
+  border-color: #0073e6;
+  box-shadow: 0 2px 10px rgba(0,0,0,.12);
 }
 
 /* ปุ่มปิด lightbox */
 .image-lightbox-close {
   position: absolute;
-  top: -7px;
-  right: -2px;
-  font-size: 2.2rem;
-  background: none;
+  top: 8px;
+  right: 8px;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  border-radius: 50%;
   border: none;
-  color: #555;
+  background: rgba(255, 255, 255, 0.88); 
+  color: #222;                           
+  font-size: 22px;
   cursor: pointer;
-  z-index: 3;
-  transition: color 0.2s ease;
+  z-index: 4;                           
+  box-shadow: 0 4px 12px rgba(0,0,0,.2);
+  transition: background .15s ease, color .15s ease, transform .1s ease;
 }
 .image-lightbox-close:hover {
-  color: #e53e3e;
+  background: #e53e3e;
+  color: #fff;
+  transform: scale(1.05);
 }
 
 /* ปุ่มลูกศรซ้ายขวา */
@@ -412,35 +428,75 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.8);
-  color: #333;
+  background: rgba(255, 255, 255, 0.88);
+  color: #222;
   width: 48px;
   height: 48px;
   border: none;
   border-radius: 50%;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0,0,0,.2);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  z-index: 2;
+  transition: transform .15s ease, background .15s ease, color .15s ease, box-shadow .15s ease;
+  z-index: 3;                  /* อยู่เหนือรูป เพื่อคลิกได้เสมอ */
 }
 
 .image-lightbox-nav:hover {
   background: #0073e6;
-  color: white;
+  color: #fff;
   transform: translateY(-50%) scale(1.1);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 6px 16px rgba(0,0,0,.28);
 }
 
-.image-lightbox-nav.prev {
-  left: 12px;
+.image-lightbox-nav.prev { left: 12px; } /* ลูกศรซ้าย */
+.image-lightbox-nav.next { right: 12px; }/* ลูกศรขวา */
+
+/* เล็กลงบนจอเล็ก */
+@media (max-width: 640px) {
+  .image-lightbox-inner {
+    width: 96vw;
+    height: 90vh;
+    padding: 8px;
+  }
+  .image-lightbox-nav {
+    width: 42px;
+    height: 42px;
+    font-size: 1.2rem;
+  }
+  .image-lightbox-thumbnail { height: 56px; }
 }
 
-.image-lightbox-nav.next {
-  right: 12px;
+/* ปุ่มซูมเข้า/ออก/รีเซ็ต (มุมขวาบน) */
+.image-lightbox-zoom-controls {
+  position: absolute;
+  top: 8px;
+  right: 56px;               /* ให้ห่างจากปุ่มปิด × นิดนึง */
+  display: flex;
+  gap: 6px;
+  z-index: 5;                /* สูงสุดในกล่องเพื่อคลิกง่าย */
+}
+
+.image-lightbox-zoom-controls button {
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.92);
+  border: none;
+  border-radius: 50%;
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+
+.image-lightbox-zoom-controls button:hover {
+  background: #0073e6;
+  color: #fff;
+  transform: scale(1.1);
 }
 
 
