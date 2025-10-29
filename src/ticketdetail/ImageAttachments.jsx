@@ -136,22 +136,24 @@ const ImageAttachments = ({ attachments = [], apiBase }) => {
         </div>
       )}
 
-      {/* แถบ thumbnails ใต้รูปหลัก */}
-      <div className="image-thumbnail-carousel">
-        <button className="image-thumb-nav prev" onClick={() => handleScrollNav(-1)}>‹</button>
-        <div className="image-thumbnail-scrollable" ref={thumbRef}>
-          {images.map((f, i) => (
-            <img
-              key={i}
-              src={`${apiBase}${f.file_path}`}
-              className={`image-thumbnail ${i === selectedIndex ? 'active' : ''}`}
-              onClick={() => handleThumbnailClick(i)}
-              alt={`thumb-${i}`}
-            />
-          ))}
+      {/* แถบ thumbnails ใต้รูปหลัก (ซ่อนทั้งบล็อกถ้ามีรูปเดียว) */}
+      {images.length > 1 && (
+        <div className="image-thumbnail-carousel">
+          <button className="image-thumb-nav prev" onClick={() => handleScrollNav(-1)}>‹</button>
+          <div className="image-thumbnail-scrollable" ref={thumbRef}>
+            {images.map((f, i) => (
+              <img
+                key={i}
+                src={`${apiBase}${f.file_path}`}
+                className={`image-thumbnail ${i === selectedIndex ? 'active' : ''}`}
+                onClick={() => handleThumbnailClick(i)}
+                alt={`thumb-${i}`}
+              />
+            ))}
+          </div>
+          <button className="image-thumb-nav next" onClick={() => handleScrollNav(1)}>›</button>
         </div>
-        <button className="image-thumb-nav next" onClick={() => handleScrollNav(1)}>›</button>
-      </div>
+      )}
 
       {/* Lightbox แสดงภาพใหญ่ + ซูม/แพนได้ */}
       {lightboxOpen && current && (
@@ -183,8 +185,10 @@ const ImageAttachments = ({ attachments = [], apiBase }) => {
               onMouseUp={handleMouseUp}
               onMouseLeave={handleMouseUp}
             >
-              {/* ก่อนหน้า */}
-              <button className="image-lightbox-nav prev" onClick={() => handleLightboxNav(-1)}>←</button>
+              {/* ปุ่มลูกศร ซ่อนเมื่อมีรูปเดียว */}
+              {images.length > 1 && (
+                <button className="image-lightbox-nav prev" onClick={() => handleLightboxNav(-1)}>←</button>
+              )}
 
               {/* รูปหลัก (ซูม/แพน) */}
               <img
@@ -202,21 +206,25 @@ const ImageAttachments = ({ attachments = [], apiBase }) => {
               />
 
               {/* ถัดไป */}
-              <button className="image-lightbox-nav next" onClick={() => handleLightboxNav(1)}>→</button>
+              {images.length > 1 && (
+                <button className="image-lightbox-nav next" onClick={() => handleLightboxNav(1)}>→</button>
+              )}
             </div>
 
-            {/* แถบ thumbnails ด้านล่างของ lightbox */}
-            <div className="image-lightbox-thumbnails">
-              {images.map((f, i) => (
-                <img
-                  key={i}
-                  src={`${apiBase}${f.file_path}`}
-                  className={`image-lightbox-thumbnail ${i === selectedIndex ? 'active' : ''}`}
-                  onClick={() => { setSelectedIndex(i); resetZoom(); }}
-                  alt={`thumb-${i}`}
-                />
-              ))}
-            </div>
+            {/* แถบ thumbnails ด้านล่างของ lightbox — ซ่อนเมื่อมีรูปเดียว */}
+            {images.length > 1 && (
+              <div className="image-lightbox-thumbnails">
+                {images.map((f, i) => (
+                  <img
+                    key={i}
+                    src={`${apiBase}${f.file_path}`}
+                    className={`image-lightbox-thumbnail ${i === selectedIndex ? 'active' : ''}`}
+                    onClick={() => { setSelectedIndex(i); resetZoom(); }}
+                    alt={`thumb-${i}`}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}

@@ -499,6 +499,14 @@
   transform: scale(1.1);
 }
 
+.image-section-title {
+  text-align: center;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #4a5568;
+  margin-bottom: 1rem;
+  letter-spacing: -0.5px;
+}
 
 /* ------ --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---   */
 /* Video Attachment */
@@ -596,38 +604,44 @@
   justify-content: center;
   align-items: center;
   z-index: 9999;
+  overscroll-behavior: contain;
+  touch-action: none;
 }
 
-/* กล่องเนื้อหาใน lightbox */
+/* กล่องเนื้อหาใน lightbox ทำให้กว้างและโปร่งเหมือนภาพ */
 .video-lightbox-inner {
   display: flex;
   flex-direction: column;
   background: #fff;
   border-radius: 12px;
   padding: 1rem;
-  max-width: 900px;
-  max-height: 90vh;
+  max-width: min(1100px, 95vw);   /* เปลี่ยนให้กว้างขึ้นเหมือนภาพ */
+  max-height: min(92vh, 1000px);  /* สูงขึ้นอีกเล็กน้อย */
   overflow: hidden;
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
   position: relative;
+  overscroll-behavior: contain;
 }
 
-/* พื้นที่แสดงวิดีโอหลักใน lightbox */
+/* พื้นที่แสดงวิดีโอหลักใน lightbox เว้น padding ด้านข้างสำหรับปุ่มลูกศรเพื่อไม่ให้ทับวิดีโอ (เหมือนภาพ) */
 .video-lightbox-main-view {
   flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
+  padding: 0 64px; /* เพิ่มที่ว่างซ้ายและขวาให้ลูกศรลอยนอกวิดีโอ */
+  box-sizing: border-box;
 }
 
 /* วิดีโอหลักใน lightbox */
 .video-lightbox-video {
   max-width: 100%;
-  max-height: 70vh;
+  max-height: 72vh;              /* สูงขึ้นเล็กน้อย */
   object-fit: contain;
-  border-radius: 8px;
+  border-radius: 12px;           /* โค้งเท่าภาพ */
   background: #000;
+  display: block;
 }
 
 /* แถว thumbnails (ภาพขนาดย่อ) ด้านล่างใน lightbox */
@@ -638,6 +652,10 @@
   margin-top: 1rem;
   overflow-x: auto;
   padding-bottom: 0.5rem;
+  scrollbar-width: none;
+}
+.video-lightbox-thumbnails::-webkit-scrollbar {
+  display: none;
 }
 
 /* thumbnail (ภาพขนาดย่อ) ใน lightbox */
@@ -656,76 +674,115 @@
   border: 2px solid #0073e6;
 }
 
-/* ปุ่มปิด lightbox */
+/* ปุ่มปิด lightbox เป็นชิปกลมขวาบนเหมือนหน้าแสดงภาพ */
 .video-lightbox-close {
   position: absolute;
-  top: -7px;
-  right: -2px;
-  font-size: 2.2rem;
-  background: none;
+  top: 8px;                      /* เดิม -7px ให้ลงมาในกรอบขาว */
+  right: 8px;                    /* เดิม -2px ติดขอบอย่างพอดี */
+  font-size: 1.1rem;             /* เล็กลงให้ดูเป็นชิป */
+  background: #fff;              /* ชิปกลม */
   border: none;
-  color: #555;
+  color: #333;
   cursor: pointer;
   z-index: 3;
-  transition: color 0.2s ease;
+  transition: all 0.2s ease;
+  width: 36px; height: 36px;
+  border-radius: 999px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.18);
+  display: flex; align-items: center; justify-content: center;
 }
 .video-lightbox-close:hover {
-  color: #e53e3e;
+  color: #fff;
+  background: #e53e3e;
 }
 
-/* ปุ่มเลื่อนซ้าย/ขวาใน lightbox */
+/* ปุ่มเลื่อนซ้ายและขวาใน lightbox ลอยนอกตัววิดีโอเหมือนภาพ */
 .video-lightbox-nav {
-  position: absolute;                          /* ให้อยู่แบบลอยเหนือเนื้อหา */
-  top: 50%;                                    /* จัดตรงกลางแนวตั้ง */
-  transform: translateY(-50%);                 /* ปรับให้ปุ่มอยู่ตรงกลางจริงๆ */
-  background: rgba(255, 255, 255, 0.8);         /* พื้นหลังสีขาวใส */
-  color: #333;                                  /* สีลูกศร */
-  width: 48px; height: 48px;                   /* ขนาดปุ่ม */
-  border: none; border-radius: 50%;            /* ปุ่มกลม */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);   /* เงาด้านล่าง */
-  display: flex; align-items: center; justify-content: center; /* จัดลูกศรให้อยู่กลางปุ่ม */
-  font-size: 1.5rem; cursor: pointer;
-  transition: all 0.2s ease-in-out;            /* เพิ่มเอฟเฟกต์นุ่ม */
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  width: 48px; height: 48px;
+  border: none; border-radius: 50%;
+  box-shadow: 0 6px 16px rgba(0,0,0,.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; cursor: pointer;
+  transition: all 0.2s ease-in-out;
   z-index: 2;
 }
 .video-lightbox-nav:hover {
-  background: #0073e6;                         /* พื้นหลังเปลี่ยนเป็นฟ้าเมื่อ hover */
-  color: white;                                /* ลูกศรเปลี่ยนเป็นสีขาว */
-  transform: translateY(-50%) scale(1.1);      /* ขยายเล็กน้อยตอน hover */
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);   /* เพิ่มเงาตอน hover */
+  background: #0073e6;
+  color: #fff;
+  transform: translateY(-50%) scale(1.08);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
 }
-.video-lightbox-nav.prev {
-  left: 12px;
-}
-.video-lightbox-nav.next {
-  right: 12px;
+.video-lightbox-nav.prev { left: 16px; }
+.video-lightbox-nav.next { right: 16px; }
+
+.video-section-title {
+  text-align: center;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #4a5568;
+  margin-bottom: 1rem;
+  letter-spacing: -0.5px;
 }
 
+/* ------ --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---   */
 /* File Attachment */
 .ticket-file-list {
   list-style: none;       /* ลบ bullet */
   padding-left: 0;        /* ลบ padding ซ้าย */
   margin: 0.5rem 0 1rem;  /* เว้นระยะด้านบน/ล่าง */
+  /* เพิ่มให้มองเห็นง่ายและจัดตรงกลาง */
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;              /* ระยะห่างระหว่างรายการ */
+}
+
+.ticket-section-title-1 {
+  text-align: center;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #4a5568;
+  margin-bottom: 1rem;
+  letter-spacing: -0.5px;
 }
 
 /* แต่ละไฟล์ใน list */
 .ticket-file-list li {
-  margin-bottom: 0.5rem; /* เว้นระหว่างไฟล์ */
+  margin-bottom: 0; /* ใช้ gap แทน */
 }
 
-/* ลิงก์สำหรับดาวน์โหลดไฟล์ */
+/* ลิงก์สำหรับดาวน์โหลดไฟล์ — ทำให้เป็นการ์ด/ปุ่มคลิกง่าย */
 .ticket-file-list a {
-  color: #0066cc;           /* สีฟ้า */
-  text-decoration: none;    /* ลบขีดใต้ */
-  font-weight: 500;         /* เน้นนิดหน่อย */
-  transition: color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: #f1f6ff;             /* ฟ้าอ่อนมองชัด */
+  border: 1px solid #cfe0ff;
+  border-radius: 12px;
+  color: #1e3a8a;                   /* ฟ้าน้ำเงินอ่านง่าย */
+  text-decoration: none;            /* ลบขีดใต้ */
+  font-weight: 600;                 /* เน้นชื่อไฟล์ */
+  transition: background .15s ease, box-shadow .15s ease, transform .15s ease, color .15s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,.05);
+  word-break: break-all;            /* ชื่อไฟล์ยาวไม่หลุดกรอบ */
 }
 
-/* ลิงก์ตอน hover */
+/* ลิงก์ตอน hover ให้เด้งขึ้นเล็กน้อยและสีเข้มขึ้น */
 .ticket-file-list a:hover {
-  text-decoration: underline; /* ขีดใต้เมื่อชี้ */
-  color: #004c99;
+  background: #e4eeff;
+  color: #153e7a;
+  box-shadow: 0 4px 12px rgba(59,130,246,.18);
+  transform: translateY(-1px);
 }
+/* ------ --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---   */
 
 @media (max-width: 1150px) {
   .ticket-grid {
@@ -756,7 +813,7 @@
     gap: 0.25rem;
   }
 
-  /* ✅ แก้ตรงนี้: เปลี่ยนกลับมาแนวนอนเหมือนจอใหญ่ */
+  /* เปลี่ยนกลับมาแนวนอนเหมือนจอใหญ่ */
   .ticket-header {
     display: flex;
     flex-direction: row;             /* เปลี่ยนจาก column → row */
@@ -771,7 +828,7 @@
     word-break: break-word;
   }
 
-  /* ✅ ปรับปุ่มลบให้เหมาะกับจอเล็ก แต่ยังอยู่ขวาและไม่เต็มจอ */
+  /* ปรับปุ่มลบให้เหมาะกับจอเล็ก แต่ยังอยู่ขวาและไม่เต็มจอ */
   .btn-delete-ticket {
     width: auto;                   /* ยกเลิก 100% */
     max-width: 180px;              /* จำกัดความกว้าง */

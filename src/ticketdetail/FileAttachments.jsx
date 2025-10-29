@@ -10,7 +10,9 @@ const FileAttachments = ({ attachments = [], apiBase }) => {
 
   return (
     <div className="ticket-attachments">
-      <h4 className="ticket-section-title">ไฟล์แนบ (เอกสาร / ไฟล์อื่น ๆ)</h4>
+      <h4 className="ticket-section-title-1">
+        ไฟล์แนบ (เอกสาร / ไฟล์อื่น ๆ)
+      </h4>
       <ul className="ticket-file-list">
         {files.map((f, i) => (
           <li key={i}>

@@ -30,7 +30,7 @@ const VideoAttachments = ({ attachments = [], apiBase }) => {
 
   return (
     <div className="video-attachments">
-      <h4 className="ticket-section-title">ไฟล์แนบ (วิดีโอ)</h4>
+      <h4 className="video-section-title">ไฟล์แนบ (วิดีโอ)</h4>
 
       <div className="video-attachments-main-video">
         <video
@@ -72,8 +72,11 @@ const VideoAttachments = ({ attachments = [], apiBase }) => {
         <div className="video-lightbox-overlay" onClick={() => setLightboxOpen(false)}>
           <div className="video-lightbox-inner" onClick={(e) => e.stopPropagation()}>
             <button className="video-lightbox-close" onClick={() => setLightboxOpen(false)}>×</button>
+
             <div className="video-lightbox-main-view">
-              <button className="video-lightbox-nav prev" onClick={() => handleLightboxNav(-1)}>←</button>
+              {videos.length > 1 && (
+                <button className="video-lightbox-nav prev" onClick={() => handleLightboxNav(-1)}>←</button>
+              )}
               <video
                 key={activeIndex}
                 controls
@@ -82,22 +85,26 @@ const VideoAttachments = ({ attachments = [], apiBase }) => {
               >
                 <source src={`${apiBase}${videos[activeIndex].file_path}`} type="video/mp4" />
               </video>
-              <button className="video-lightbox-nav next" onClick={() => handleLightboxNav(1)}>→</button>
+              {videos.length > 1 && (
+                <button className="video-lightbox-nav next" onClick={() => handleLightboxNav(1)}>→</button>
+              )}
             </div>
 
-            <div className="video-lightbox-thumbnails">
-              {videos.map((v, i) => (
-                <video
-                  key={i}
-                  src={`${apiBase}${v.file_path}`}
-                  className={`video-lightbox-thumbnail ${i === activeIndex ? 'active' : ''}`}
-                  onClick={() => setActiveIndex(i)}
-                  muted
-                  loop
-                  playsInline
-                />
-              ))}
-            </div>
+            {videos.length > 1 && (
+              <div className="video-lightbox-thumbnails">
+                {videos.map((v, i) => (
+                  <video
+                    key={i}
+                    src={`${apiBase}${v.file_path}`}
+                    className={`video-lightbox-thumbnail ${i === activeIndex ? 'active' : ''}`}
+                    onClick={() => setActiveIndex(i)}
+                    muted
+                    loop
+                    playsInline
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
